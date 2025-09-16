@@ -5,7 +5,7 @@
 
 # Ignore compiled files
 *.o
-*.exe
+
 *.out
 *.dll
 *.so
