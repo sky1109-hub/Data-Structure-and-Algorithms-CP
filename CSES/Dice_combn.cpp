@@ -1,24 +1,27 @@
 #include <bits/stdc++.h>
 using namespace std;
-int solve(int n, int cs)
-{
-    if (cs > n)
-        return 0;
-    if (cs == n)
-        return 1;
-    int s = 0;
-    for (int i = 1; i <= min(6, n); i++)
-    {
-        s += solve(n, cs + i);
-    }
-    return s;
-}
-int main()
-{
+const int mod = 1e9 + 7;
 
-    const int mod = 1e9 + 7;
+int solve(int n, vector<int>& dp) {
+    if (n < 0)
+        return 0;
+    if (n == 0)
+        return 1;
+    if (dp[n] != -1)
+        return dp[n];
+
+    long long s = 0;
+    for (int i = 1; i <= min(n, 6); i++) {
+        s = (s + solve(n - i, dp)) % mod;
+    }
+
+    return dp[n] = s;
+}
+
+int main() {
     int n;
     cin >> n;
-    cout << solve(n, 0) << endl;
+    vector<int> dp(n + 1, -1);
+    cout << solve(n, dp) << endl;
     return 0;
 }
