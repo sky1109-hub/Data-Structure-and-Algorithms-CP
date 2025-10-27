@@ -1,85 +1,107 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-vector<int> a, seg;
-
-void build(int idx, int l, int r)
+vector<int> seg, lazy, a;
+void build(int idx, int low, int high)
 {
-    if (l == r)
+    if (low == high)
     {
-        seg[idx] = a[l];
+        seg[idx] = a[low];
         return;
     }
-    int mid = (l + r) / 2;
-    build(2 * idx + 1, l, mid);
-    build(2 * idx + 2, mid + 1, r);
+    int m = (low + high) / 2;
+    build(2 * idx + 1, low, m);
+    build(2 * idx + 2, m + 1, high);
     seg[idx] = min(seg[2 * idx + 1], seg[2 * idx + 2]);
 }
 
-void update(int idx, int i, int val, int l, int r)
+int query(int idx, int low, int high, int l, int r)
+{
+    if (l > high || r < low)
+        return INT_MAX;
+    if (l <= low && r >= high)
+    {
+        return seg[idx];
+    }
+    int m = (low + high) / 2;
+    int left = query(2 * idx + 1, low, m, l, r);
+    int right = query(2 * idx + 2, m + 1, high, l, r);
+    return min(left, right);
+}
+int query(int l, int r)
+{
+    return query(0, 0, a.size() - 1, l, r);
+}
+void update(int idx, int l, int r, int i, int val)
 {
     if (l == r)
     {
         seg[idx] = val;
         return;
     }
-    int mid = (l + r) / 2;
-    if (i <= mid)
-        update(2 * idx + 1, i, val, l, mid);
+    int m = (l + r) / 2;
+    if (i <= m)
+        update(2 * idx + 1, l, m, i, val);
     else
-        update(2 * idx + 2, i, val, mid + 1, r);
-
+        update(2 * idx + 2, m + 1, r, i, val);
     seg[idx] = min(seg[2 * idx + 1], seg[2 * idx + 2]);
 }
-
-int query(int idx, int l, int r, int low, int high)
+void update(int i, int val)
 {
-    if (high < l || r < low)
-        return INT_MAX;
-
-    if (l >= low && r <= high)
-        return seg[idx];
-
-    int mid = (l + r) / 2;
-    return min(query(2 * idx + 1, l, mid, low, high),
-               query(2 * idx + 2, mid + 1, r, low, high));
+    return update(0, 0, a.size() - 1, i, val);
 }
-
+void push(int idx, int l, int r)
+{
+    if (lazy[idx] != 0)
+    {
+        seg[idx] +=  lazy[idx];
+        if (l != r)
+        {
+            lazy[2 * idx + 1] += lazy[idx];
+            lazy[2 * idx + 2] += lazy[idx];
+        }
+        lazy[idx] = 0;
+    }
+}
+void range(int idx, int l, int r, int low, int high, int val)
+{
+    push(idx, low, high);
+    // no overlap
+    if (l > high || r < low)
+        return;
+    // full overlap
+    if (l <= low && r >= high)
+    {
+        lazy[idx] += val;
+        push(idx, low, high);
+        return;
+    }
+    int m = (low + high) / 2;
+    range(2 * idx + 1, l, r, low, m, val);
+    range(2 * idx + 2, l, r, m + 1, high, val);
+    seg[idx] = min(seg[2 * idx + 1], seg[2 * idx + 2]);
+}
 int main()
 {
     int n;
     cin >> n;
-    a.resize(n);
-    seg.resize(4 * n, INT_MAX);  // safer size
-
+    vector<int> b(n);
     for (int i = 0; i < n; i++)
-        cin >> a[i];
+    {
+        cin >> b[i];
+    }
+    a = b;
+    seg.resize(4 * n);
+    lazy.resize(4 * n, 0);
 
     build(0, 0, n - 1);
-
-    // Example usage
-    int q;
-    cin >> q; // number of queries
-
-    while (q--)
-    {
-        int type;
-        cin >> type;
-
-        if (type == 1)
-        {
-            int l, r;
-            cin >> l >> r;
-            cout << "Min in [" << l << "," << r << "] = "
-                 << query(0, 0, n - 1, l, r) << endl;
-        }
-        else
-        {
-            int i, val;
-            cin >> i >> val;
-            update(0, i, val, 0, n - 1);
-        }
-    }
+    int x, y, i, val;
+    cout << "Query before: ";
+    cin >> x >> y;
+    cout << query(x, y) << endl;
+    cout << "update: ";
+    cin >> i >> val;
+    update(i, val);
+    cout << "same query result after updation: " << query(x, y);
 
     return 0;
 }
