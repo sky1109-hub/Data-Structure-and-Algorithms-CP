@@ -64,7 +64,7 @@ void push(int idx, int l, int r)
 }
 void range(int idx, int l, int r, int low, int high, int val)
 {
-    push(idx, low, high);
+    push(idx, low, high);  // check for lazy
     // no overlap
     if (l > high || r < low)
         return;
