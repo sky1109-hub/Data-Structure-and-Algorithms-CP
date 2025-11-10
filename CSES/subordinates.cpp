@@ -1,37 +1,37 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-vector<vector<int>> g;
-vector<int> sub;
-
-int dfs(int u) {
-    int size = 1;
-    for(int v : g[u]) {
-        size += dfs(v);
+using ll = long long;
+vector<vector<int>> adj;
+vector<int> ans;
+int dfs(int node)
+{
+    if (adj[node].empty())
+    {
+        return 0;
     }
-    sub[u] = size;
-    return size;
+    int k =0;
+    for (auto it : adj[node])
+    {
+        k += dfs(it);
+    }
+    ans[node] = k + 1;
+    return k + 1;
 }
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-
+int main()
+{
     int n;
     cin >> n;
-    g.resize(n+1);
-    sub.resize(n+1);
-
-    for(int i = 2; i <= n; i++) {
-        int boss;
-        cin >> boss;
-        g[boss].push_back(i);   
+    adj.resize(n + 1);
+    ans.resize(n + 1);
+    for (int i = 2; i <= n; i++)
+    {
+        int x;
+        cin >> x;
+        adj[x].push_back(i);
     }
-
-    dfs(1);
-
-    for(int i = 1; i <= n; i++)
-        cout << sub[i] - 1 << " "; // exclude self
+    int x = dfs(1);
+    for (int i = 1; i <= n; i++)
+        cout <<( ans[i]) << " ";
 
     return 0;
 }
