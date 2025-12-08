@@ -1,37 +1,37 @@
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
 int main() {
-    string s;  
+    string s;
     cin >> s;
 
-    long long nb, ns, nc;
-    cin >> nb >> ns >> nc;
+    vector<ll> have(3), cost(3), req(3, 0);
+    cin >> have[0] >> have[1] >> have[2];
+    cin >> cost[0] >> cost[1] >> cost[2];
 
-    long long cb, cs, cc;
-    cin >> cb >> cs >> cc;
-
-    long long r;
+    ll r;
     cin >> r;
 
-    long long breq = 0, sreq = 0, creq = 0;
-    for (auto it : s) {
-        if (it == 'S') sreq++;
-        else if (it == 'B') breq++;
-        else if (it == 'C') creq++;
+    for (char c : s) {
+        if (c == 'B') req[0]++;
+        else if (c == 'S') req[1]++;
+        else if (c == 'C') req[2]++;
     }
 
-    long long l = 0, h = 1e15, ans = 0;  // bigger upper bound
+    ll l = 0, h = 4e12, ans = 0;
+
     while (l <= h) {
-        long long m = l + (h - l) / 2;
+        ll m = l + (h - l) / 2;
 
-        long long bq = max(0LL, breq * m - nb);
-        long long sq = max(0LL, sreq * m - ns);
-        long long cq = max(0LL, creq * m - nc);
+        ll need = 0;
+        for (int i = 0; i < 3; i++) {
+            ll used = m * req[i] - have[i];
+            if (used > 0) need += used * cost[i];
+            if (need > r) break; 
+        }
 
-        __int128 cost = (__int128)bq * cb + (__int128)sq * cs + (__int128)cq * cc;
-
-        if (cost <= r) {
+        if (need <= r) {
             ans = m;
             l = m + 1;
         } else {
