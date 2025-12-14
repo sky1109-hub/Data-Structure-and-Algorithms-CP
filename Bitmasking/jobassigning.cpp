@@ -1,36 +1,39 @@
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
-vector<vector<int>> c;
-vector<int> dp;
 int n;
+vector<vector<int>> c;
+vector<vector<ll>> dp;
 
-int solve(int mask) {
-    if (mask == (1<<n) - 1) return 0;     // all jobs assigned
-    if (dp[mask] != -1) return dp[mask];
+ll solve(int idx, int mask) {
+    if (idx == n) return 0;
 
-    int worker = __builtin_popcount(mask); // next worker index
-    int ans = INT_MAX;
+    if (dp[idx][mask] != -1) return dp[idx][mask];
+
+    ll best = LLONG_MAX;
 
     for (int j = 0; j < n; j++) {
-        if (!(mask & (1<<j))) { // job j not assigned
-            ans = min(ans, c[worker][j] + solve(mask | (1<<j)));
+        if ((mask & (1 << j)) == 0) {
+            ll sub = solve(idx + 1, mask | (1 << j));
+            if (sub != LLONG_MAX)
+                best = min(best, (ll)c[idx][j] + sub);
         }
     }
-    return dp[mask] = ans;
+
+    return dp[idx][mask] = best;
 }
 
 int main() {
     cin >> n;
-    dp.resize(1<<n, -1);  // allocate for all masks
-    c.resize(n, vector<int>(n));
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
+    c.assign(n, vector<int>(n));
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
             cin >> c[i][j];
-        }
-    }
 
-    cout << solve(0) << endl;
+    dp.assign(n, vector<ll>(1 << n, -1));
+
+    cout << solve(0, 0) << "\n";
     return 0;
 }
