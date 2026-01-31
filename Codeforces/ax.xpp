@@ -1,0 +1,15 @@
+int dfs(int s,int t,vector<int> &w,vector<int> v,int maxi,adj){
+if(s==t)return w[t];
+v[i]=true;
+for(int i=0;i<adj[s].size();i++){
+    int val=;
+    if(v[adj[s][i]])continue;
+    val+=dfs(adj[s][i],t,w,v,maxi,adj);
+    maxi=max(val,maxi);
+}
+return maxi;
+}
+int main(){
+    int maxi=-1e7;
+    dfs(s,t,w,v,maxi)
+}

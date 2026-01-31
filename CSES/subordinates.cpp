@@ -1,34 +1,23 @@
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
+vector<int> dp;
 vector<vector<int>> adj;
-vector<int> ans;
-
-int dfs(int node)
+void dfs(int node)
 {
-    if (adj[node].empty())
-    {
-        ans[node] = 0; // leaf has 0 subordinates
-        return 1;      // subtree size = 1
+    int s = 0;
+    for (auto it:adj[node]){
+        dfs(it);
+        s+=(1+dp[it]);
     }
-
-    int k = 0;
-    for (auto it : adj[node])
-    {
-        k += dfs(it);
-    }
-
-    ans[node] = k;   // <-- FIX: store number of subordinates (not k+1)
-    return k + 1;    // subtree size = (all children) + itself
+    dp[node]=s;
 }
-
 int main()
 {
     int n;
     cin >> n;
+    dp.resize(n + 1, 0);
     adj.resize(n + 1);
-    ans.resize(n + 1);
-
     for (int i = 2; i <= n; i++)
     {
         int x;
@@ -37,8 +26,7 @@ int main()
     }
 
     dfs(1);
-
     for (int i = 1; i <= n; i++)
-        cout << ans[i] << " ";
+        cout << dp[i] << " ";
     return 0;
 }
