@@ -32,11 +32,13 @@
 // }
 #include <bits/stdc++.h>
 using namespace std;
+
+using ll = long long;
+
 int main()
 {
-    int x, y;
-    cin >> x >> y;
-    cout << x + y;
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
 
     return 0;
 }
